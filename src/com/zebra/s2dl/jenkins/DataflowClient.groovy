@@ -49,7 +49,7 @@ class DataflowClient {
   void drain(String name, boolean wait = false) {
     Job job = list().find { it.getName().matches(name) }
     if (running(job)) {
-      print("Draining the job...")
+      context.log("Draining the job...")
       jobs
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
@@ -61,7 +61,7 @@ class DataflowClient {
         awaitCompleted(job.getId())
       }
     } else {
-      print("Job is already completed!")
+      context.log("Job is already completed!")
     }
   }
 
@@ -70,9 +70,11 @@ class DataflowClient {
   }
 
   void awaitCompleted(String jobId) {
+    def count = 0
     while (running(jobId) ) {
-      print("Wait until job is completed...")
+      context.log("Wait until job is completed ($count sec)...")
       sleep(1000)
+      count++
     }
   }
 
