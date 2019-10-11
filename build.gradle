@@ -10,7 +10,12 @@ repositories {
   mavenCentral()
 }
 
+//configurations {
+//  ivy
+//}
+
 dependencies {
+//  ivy "org.apache.ivy:ivy:2.3.0"
   compile 'org.codehaus.groovy:groovy-all:2.5.4'
   compile "com.google.apis:google-api-services-dataflow:v1b3-rev266-1.25.0"
   compile "com.google.cloud:google-cloud-core:1.65.0"
@@ -25,12 +30,16 @@ sourceSets {
 //    }
     groovy {
       // all code files will be in either of the folders
-      srcDirs = ['src', 'vars']
+      srcDirs = ['src']
     }
   }
   test {
-    java {
+    groovy {
       srcDir 'test'
     }
   }
 }
+
+//tasks.withType(GroovyCompile) {
+//  groovyClasspath += configurations.ivy
+//}

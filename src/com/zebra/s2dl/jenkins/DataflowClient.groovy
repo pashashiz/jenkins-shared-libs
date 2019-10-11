@@ -8,22 +8,12 @@ import com.google.api.services.dataflow.model.Job
 import com.google.api.services.dataflow.model.ListJobsResponse
 import com.google.cloud.ServiceOptions
 
-@Grapes([
-    @Grab(group='com.google.apis', module='google-api-services-dataflow', version='v1b3-rev266-1.25.0'),
-    @Grab(group='com.google.cloud', module='google-cloud-core', version='1.65.0')]
-)
 class DataflowClient {
 
-  static void main(String[] args) {
-    System.getenv()
-    new DataflowClient()
-        .drain(name: "spg-zpc-pubsub-to-application-pipeline-.+", wait: true)
-  }
-
-  def projectId = ServiceOptions.getDefaultProjectId();
-  def credentials = GoogleCredential.getApplicationDefault()
+  private final projectId = ServiceOptions.getDefaultProjectId();
+  private final credentials = GoogleCredential.getApplicationDefault()
       .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
-  def jobs = new Dataflow.Builder(
+  private final jobs = new Dataflow.Builder(
           GoogleNetHttpTransport.newTrustedTransport(),
           JacksonFactory.getDefaultInstance(),
           credentials)
@@ -31,8 +21,11 @@ class DataflowClient {
       .build()
       .projects()
       .jobs()
+  private final Context context;
 
-  DataflowClient() {}
+  DataflowClient(Context context) {
+    this.context = context
+  }
 
   List<Job> list() {
     List<Job> all = []
