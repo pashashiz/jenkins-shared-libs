@@ -54,20 +54,18 @@ class DataflowClient {
     return all
   }
 
-  Awaitable<Void> drain(String nameRegexp) {
+  def drain(String name, boolean wait = false) {
     Job job = jobs.find { it.getName().matches(nameRegexp) }
     if (job != null) {
       jobs()
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
-      return { awaitCompleted(job.getId()) }
+      if (wait) {
+        awaitCompleted(job.getId())
+      }
     } else {
       return { null }
     }
-  }
-
-  interface Awaitable<T> {
-    T await()
   }
 
   void awaitCompleted(String jobId) {
