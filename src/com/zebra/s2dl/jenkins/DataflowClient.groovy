@@ -2,6 +2,7 @@ package com.zebra.s2dl.jenkins
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.dataflow.*
 import com.google.api.services.dataflow.model.Job
@@ -57,7 +58,7 @@ class DataflowClient {
 
   def drain(String name, boolean wait = false) {
     Job job = jobs.find { it.getName().matches(name) }
-    if (job != null) {
+    if (running(job)) {
       jobs()
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
@@ -80,11 +81,14 @@ class DataflowClient {
   }
 
   boolean completed(String jobId) {
-    def job = jobs().get(projectId, jobId).execute()
-    steps.println(job)
-    steps.println(job.getId())
-    steps.println(job.getRequestedState())
+    completed(jobs().get(projectId, jobId).execute())
+  }
+
+  boolean completed(Job job) {
     if (job != null) {
+      steps.println(job)
+      steps.println(job.getId())
+      steps.println(job.getRequestedState())
       ["JOB_STATE_STOPPED" ,
        "JOB_STATE_DONE",
        "JOB_STATE_FAILED",
@@ -94,5 +98,8 @@ class DataflowClient {
     } else {
       true
     }
+  }
+  boolean running(Job job) {
+    !completed(job)
   }
 }
