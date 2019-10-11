@@ -6,7 +6,11 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.dataflow.*
 import com.google.api.services.dataflow.model.Job
 import com.google.api.services.dataflow.model.ListJobsResponse
-import com.google.cloud.ServiceOptions;
+import com.google.cloud.ServiceOptions
+
+import java.time.Instant
+import java.time.Period
+import java.util.concurrent.Executors;
 
 @Grapes([
     @Grab(group='com.google.apis', module='google-api-services-dataflow', version='v1b3-rev266-1.25.0'),
@@ -49,12 +53,42 @@ class DataflowClient {
     return all
   }
 
-  def drain(String nameRegexp) {
+  Awaitable<Void> drain(String nameRegexp) {
     Job job = jobs.find { it.getName().matches(nameRegexp) }
     if (job != null) {
       jobs()
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
+      return { Period timeout -> return awaitCompleted(job.getId(), timeout) }
+    } else {
+      return { Period timeout -> return null }
+    }
+  }
+
+  interface Awaitable<T> {
+    T await(Period timeout)
+  }
+
+  void awaitCompleted(String jobId, Period timeout) {
+    def deadline = Instant.now().plus(timeout);
+    while (!completed(jobId)) {}
+  }
+
+  boolean running(String jobId) {
+    !completed(jobId)
+  }
+
+  boolean completed(String jobId) {
+    def job = jobs().get(projectId, jobId).execute()
+    if (job != null) {
+      ["JOB_STATE_STOPPED" ,
+       "JOB_STATE_DONE",
+       "JOB_STATE_FAILED",
+       "JOB_STATE_CANCELLED",
+       "JOB_STATE_DRAINED"]
+          .contains(job.getRequestedState())
+    } else {
+      true
     }
   }
 }
