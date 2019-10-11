@@ -2,46 +2,41 @@ package com.zebra.s2dl.jenkins
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.dataflow.*
 import com.google.api.services.dataflow.model.Job
 import com.google.api.services.dataflow.model.ListJobsResponse
 import com.google.cloud.ServiceOptions
 
-@Grapes([
-    @Grab(group='com.google.apis', module='google-api-services-dataflow', version='v1b3-rev266-1.25.0'),
-    @Grab(group='com.google.cloud', module='google-cloud-core', version='1.65.0')]
-)
+//@Grapes([
+//    @Grab(group='com.google.apis', module='google-api-services-dataflow', version='v1b3-rev266-1.25.0'),
+//    @Grab(group='com.google.cloud', module='google-cloud-core', version='1.65.0')]
+//)
 class DataflowClient {
 
-//  static void main(String[] args) {
-//    new DataflowClient()
-//        .drain("battery_analytic-gcs-archiver-pipeline-053950d4c3c4a1fb")
-//  }
+  static void main(String[] args) {
+    System.getenv()
+    new DataflowClient()
+        .drain("spg-zpc-pubsub-to-application-pipeline-.+", true)
+  }
 
   def projectId = ServiceOptions.getDefaultProjectId();
-  def credentials = GoogleCredential.getApplicationDefault();
-  def dataflow = new Dataflow.Builder(
+  def credentials = GoogleCredential.getApplicationDefault()
+      .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+  def jobs = new Dataflow.Builder(
           GoogleNetHttpTransport.newTrustedTransport(),
           JacksonFactory.getDefaultInstance(),
           credentials)
       .setApplicationName("Jenkins Dataflow plugin")
       .build()
+      .projects()
+      .jobs()
 
-  def steps
+  DataflowClient() {}
 
-  DataflowClient(steps) {
-    this.steps = steps;
-  }
-
-  Dataflow.Projects.Jobs jobs() {
-    dataflow.projects().jobs()
-  }
-
-  List<Job> getJobs() {
+  List<Job> list() {
     List<Job> all = []
-    Dataflow.Projects.Jobs.List request = jobs().list(projectId)
+    Dataflow.Projects.Jobs.List request = jobs.list(projectId)
     ListJobsResponse response;
     while (true) {
       response = request.execute()
@@ -56,22 +51,28 @@ class DataflowClient {
     return all
   }
 
-  def drain(String name, boolean wait = false) {
-    Job job = jobs.find { it.getName().matches(name) }
+  void drain(String name, boolean wait = false) {
+    Job job = list().find { it.getName().matches(name) }
     if (running(job)) {
-      jobs()
+      print("Draining the job...")
+      jobs
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
       if (wait) {
         awaitCompleted(job.getId())
       }
+    } else if (completing(job)) {
+      if (wait) {
+        awaitCompleted(job.getId())
+      }
     } else {
-      return { null }
+      print("Job is already completed!")
     }
   }
 
   void awaitCompleted(String jobId) {
     while (running(jobId) ) {
+      print("Wait until job is completed...")
       sleep(1000)
     }
   }
@@ -81,25 +82,33 @@ class DataflowClient {
   }
 
   boolean completed(String jobId) {
-    completed(jobs().get(projectId, jobId).execute())
+    completed(jobs.get(projectId, jobId).execute())
   }
 
-  boolean completed(Job job) {
+  static boolean completed(Job job) {
     if (job != null) {
-      steps.println(job)
-      steps.println(job.getId())
-      steps.println(job.getRequestedState())
       ["JOB_STATE_STOPPED" ,
        "JOB_STATE_DONE",
        "JOB_STATE_FAILED",
        "JOB_STATE_CANCELLED",
        "JOB_STATE_DRAINED"]
-          .contains(job.getRequestedState())
+          .contains(job.getCurrentState())
     } else {
       true
     }
   }
-  boolean running(Job job) {
-    !completed(job)
+
+  static boolean completing(Job job) {
+    if (job != null) {
+      ["JOB_STATE_DRAINING" ,
+       "JOB_STATE_CANCELLING"]
+          .contains(job.getCurrentState())
+    } else {
+      true
+    }
+  }
+
+  static boolean running(Job job) {
+    return !completing(job) && !completed(job)
   }
 }
