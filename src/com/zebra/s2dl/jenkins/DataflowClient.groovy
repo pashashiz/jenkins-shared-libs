@@ -53,7 +53,7 @@ class DataflowClient {
     Job job = jobs.find { it.getName().matches(nameRegexp) }
     if (job != null) {
       jobs()
-          .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_CANCELLED"))
+          .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
     }
   }
