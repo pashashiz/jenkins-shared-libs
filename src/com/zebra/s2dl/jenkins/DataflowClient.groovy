@@ -26,7 +26,7 @@ class DataflowClient {
   static DataflowClient of(Context context) {
     def client = new DataflowClient()
     client.context = context
-    client
+    return client
   }
 
   List<Job> list() {
@@ -105,7 +105,7 @@ class DataflowClient {
        "JOB_STATE_CANCELLING"]
           .contains(job.getCurrentState())
     } else {
-      true
+      false
     }
   }
 
