@@ -7,7 +7,7 @@ class JenkinsContext implements Context {
   static JenkinsContext of(steps) {
     def context = new JenkinsContext()
     context.steps = steps
-    return steps
+    return context
   }
 
   @Override

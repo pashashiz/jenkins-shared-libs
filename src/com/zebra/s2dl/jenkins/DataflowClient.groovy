@@ -25,7 +25,7 @@ class DataflowClient {
 
   static DataflowClient of(Context context) {
     def client = new DataflowClient()
-    client.context = context;
+    client.context = context
     client
   }
 
