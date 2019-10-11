@@ -3,11 +3,10 @@
     @Grab(group='com.google.cloud', module='google-cloud-core', version='1.65.0')]
 )
 import com.zebra.s2dl.jenkins.DataflowClient
-import com.zebra.s2dl.jenkins.JenkinsContext
 
 def call(Closure cl) {
   cl.resolveStrategy = Closure.DELEGATE_FIRST
-  cl.delegate = new DataflowClient(this)
+  cl.delegate = new DataflowClient()
   cl()
   return this
 }
