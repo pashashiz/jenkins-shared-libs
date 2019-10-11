@@ -2,9 +2,11 @@ package com.zebra.s2dl.jenkins
 
 class JenkinsContext implements Context {
 
-  def final steps
+  def steps
 
-  JenkinsContext(steps) {
+  JenkinsContext() {}
+
+  void setSteps(steps) {
     this.steps = steps
   }
 

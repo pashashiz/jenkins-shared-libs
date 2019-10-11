@@ -28,7 +28,9 @@ class DataflowClient {
   }
 
   DataflowClient(steps) {
-    this.context = new JenkinsContext(steps)
+    def context = new JenkinsContext()
+    context.steps = steps
+    this.context = context
   }
 
   List<Job> list() {
