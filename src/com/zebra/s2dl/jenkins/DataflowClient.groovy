@@ -22,9 +22,7 @@ class DataflowClient {
       .projects()
       .jobs()
 
-  static DataflowClient of() {
-     new DataflowClient()
-  }
+  Object script
 
   List<Job> list() {
     List<Job> all = []
@@ -44,6 +42,7 @@ class DataflowClient {
   }
 
   void drain(String name, boolean wait = false) {
+    script.echo("HELLO")
     Job job = list().find { it.getName().matches(name) }
     if (running(job)) {
       println("Draining the job...")
