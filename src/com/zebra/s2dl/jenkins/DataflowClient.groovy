@@ -23,8 +23,12 @@ class DataflowClient {
       .jobs()
   private final Context context;
 
-  DataflowClient(Context context) {
-    this.context = context
+  DataflowClient() {
+    this.context = new DummyContext()
+  }
+
+  DataflowClient(steps) {
+    this.context = new JenkinsContext(steps)
   }
 
   List<Job> list() {
