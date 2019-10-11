@@ -8,6 +8,7 @@ import com.google.api.services.dataflow.model.Job
 import com.google.api.services.dataflow.model.ListJobsResponse
 import com.google.cloud.ServiceOptions
 
+import java.time.Duration
 import java.time.Instant
 import java.time.Period
 import java.util.concurrent.Executors;
@@ -59,19 +60,20 @@ class DataflowClient {
       jobs()
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
-      return { Period timeout -> return awaitCompleted(job.getId(), timeout) }
+      return { awaitCompleted(job.getId()) }
     } else {
-      return { Period timeout -> return null }
+      return { null }
     }
   }
 
   interface Awaitable<T> {
-    T await(Period timeout)
+    T await()
   }
 
-  void awaitCompleted(String jobId, Period timeout) {
-    def deadline = Instant.now().plus(timeout);
-    while (!completed(jobId)) {}
+  void awaitCompleted(String jobId) {
+    while (running(jobId) ) {
+      sleep(1000)
+    }
   }
 
   boolean running(String jobId) {
