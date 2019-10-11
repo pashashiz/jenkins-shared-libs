@@ -71,7 +71,7 @@ class DataflowClient {
   }
 
   void drain(Map args) {
-    drain(*args.values().toList())
+    drain(args.get("name") as String, args.getOrDefault(wait, false) as Boolean)
   }
 
   void awaitCompleted(String jobId) {
