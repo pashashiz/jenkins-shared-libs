@@ -55,7 +55,7 @@ class DataflowClient {
   }
 
   def drain(String name, boolean wait = false) {
-    Job job = jobs.find { it.getName().matches(nameRegexp) }
+    Job job = jobs.find { it.getName().matches(name) }
     if (job != null) {
       jobs()
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
