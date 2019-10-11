@@ -17,7 +17,7 @@ class DataflowClient {
   static void main(String[] args) {
     System.getenv()
     new DataflowClient()
-        .drain("spg-zpc-pubsub-to-application-pipeline-.+", true)
+        .drain(name: "spg-zpc-pubsub-to-application-pipeline-.+", wait: true)
   }
 
   def projectId = ServiceOptions.getDefaultProjectId();
@@ -68,6 +68,10 @@ class DataflowClient {
     } else {
       print("Job is already completed!")
     }
+  }
+
+  void drain(Map args) {
+    drain(*args.values().toList())
   }
 
   void awaitCompleted(String jobId) {
