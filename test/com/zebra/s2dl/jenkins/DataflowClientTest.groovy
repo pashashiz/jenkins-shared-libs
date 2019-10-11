@@ -6,7 +6,7 @@ class DataflowClientTest {
 
   @Test
   void drain() {
-    new DataflowClient(new DummyContext())
+    DataflowClient.of(new DummyContext())
         .drain(name: "spg-zpc-pubsub-to-application-pipeline-.+", wait: true)
   }
 }

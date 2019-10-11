@@ -21,17 +21,13 @@ class DataflowClient {
       .build()
       .projects()
       .jobs()
-  private final Context context;
+  private Context context
 
-//  DataflowClient() {
-//    this.context = new DummyContext()
-//  }
-
-//  DataflowClient(steps) {
-//    def context = new JenkinsContext()
-//    context.steps = steps
-//    this.context = context
-//  }
+  static DataflowClient of(Context context) {
+    def client = new DataflowClient()
+    client.context = context;
+    client
+  }
 
   List<Job> list() {
     List<Job> all = []

@@ -2,10 +2,12 @@ package com.zebra.s2dl.jenkins
 
 class JenkinsContext implements Context {
 
-  def steps
+  private steps
 
-  void setSteps(steps) {
-    this.steps = steps
+  static JenkinsContext of(steps) {
+    def context = new JenkinsContext()
+    context.steps = steps
+    return steps
   }
 
   @Override
