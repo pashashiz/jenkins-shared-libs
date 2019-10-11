@@ -1,7 +1,8 @@
 import com.zebra.s2dl.jenkins.DataflowClient
 
 def call(Closure cl) {
-  def code = cl.rehydrate(new DataflowClient(), this, this)
-  code.resolveStrategy = Closure.DELEGATE_ONLY
-  code()
+  cl.resolveStrategy = Closure.DELEGATE_FIRST
+  cl.delegate = new DataflowClient()
+  cl()
+  return this
 }
