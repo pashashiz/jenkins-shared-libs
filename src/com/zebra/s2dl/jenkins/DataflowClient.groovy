@@ -67,7 +67,9 @@ class DataflowClient {
   void awaitFinished(String jobId) {
     def count = 0
     while (running(jobId) || finishing(jobId)) {
-      script.echo("Wait until job is finished ($count sec)...")
+      if (count % 5 == 0) {
+        script.echo("Wait until job is finished ($count sec)...")
+      }
       sleep(1000)
       count++
     }
