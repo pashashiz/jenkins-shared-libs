@@ -66,7 +66,7 @@ class DataflowClient {
 
   void awaitFinished(String jobId) {
     def count = 0
-    while (running(jobId) ) {
+    while (running(jobId) || finishing(jobId)) {
       script.echo("Wait until job is finished ($count sec)...")
       sleep(1000)
       count++
@@ -75,6 +75,10 @@ class DataflowClient {
 
   boolean running(String jobId) {
     running(jobs.get(projectId, jobId).execute())
+  }
+
+  boolean finishing(String jobId) {
+    finishing(jobs.get(projectId, jobId).execute())
   }
 
   boolean finished(String jobId) {

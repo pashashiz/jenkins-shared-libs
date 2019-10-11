@@ -13,6 +13,6 @@ class DataflowClientTest {
   @Test
   void drain() {
     new DataflowClient(script: new TestScript())
-        .drain(name: " mdm-s3-soti-onprem-extractor-.+", wait: true)
+        .drain(name: "support-gcs-archiver-.+", wait: true)
   }
 }
