@@ -22,11 +22,8 @@ class DataflowClient {
       .projects()
       .jobs()
 
-  private steps
-
-  static DataflowClient of(steps) {
-    def client = new DataflowClient()
-    client.steps = steps
+  static DataflowClient of() {
+     new DataflowClient()
   }
 
   List<Job> list() {
@@ -47,7 +44,6 @@ class DataflowClient {
   }
 
   void drain(String name, boolean wait = false) {
-    steps.echo("Drain")
     Job job = list().find { it.getName().matches(name) }
     if (running(job)) {
       println("Draining the job...")
