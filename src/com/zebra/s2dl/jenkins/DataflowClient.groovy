@@ -22,7 +22,7 @@ class DataflowClient {
       .projects()
       .jobs()
 
-  Object script
+  Script script
 
   List<Job> list() {
     List<Job> all = []
@@ -42,10 +42,9 @@ class DataflowClient {
   }
 
   void drain(String name, boolean wait = false) {
-    script.echo("HELLO")
     Job job = list().find { it.getName().matches(name) }
     if (running(job)) {
-      println("Draining the job...")
+      script.echo("Draining the job...")
       jobs
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
@@ -57,7 +56,7 @@ class DataflowClient {
         awaitCompleted(job.getId())
       }
     } else {
-      println("Job is already completed!")
+      script.echo("Job is already completed!")
     }
   }
 
@@ -68,7 +67,7 @@ class DataflowClient {
   void awaitCompleted(String jobId) {
     def count = 0
     while (running(jobId) ) {
-      println("Wait until job is completed ($count sec)...")
+      script.echo("Wait until job is completed ($count sec)...")
       sleep(1000)
       count++
     }
