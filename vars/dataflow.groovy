@@ -7,7 +7,7 @@ import com.zebra.s2dl.jenkins.*
 def call(Closure cl) {
   this.echo("Dataflow")
   cl.resolveStrategy = Closure.DELEGATE_FIRST
-  cl.delegate = DataflowClient.of()
+  cl.delegate = DataflowClient.of(this)
   cl()
   return this
 }
