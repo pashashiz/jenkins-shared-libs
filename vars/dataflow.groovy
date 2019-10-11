@@ -8,6 +8,7 @@ def call(Closure cl) {
   cl.resolveStrategy = Closure.DELEGATE_FIRST
   this.echo("test")
   def ctx = JenkinsContext.of(this)
+  ctx.log("hey")
   cl.delegate = DataflowClient.of(ctx)
   cl()
   return this
