@@ -21,12 +21,9 @@ class DataflowClient {
       .build()
       .projects()
       .jobs()
-  private Context context
 
-  static DataflowClient of(Context context) {
-    def client = new DataflowClient()
-    client.context = context
-    return client
+  static DataflowClient of() {
+     new DataflowClient()
   }
 
   List<Job> list() {
@@ -49,7 +46,7 @@ class DataflowClient {
   void drain(String name, boolean wait = false) {
     Job job = list().find { it.getName().matches(name) }
     if (running(job)) {
-      context.log("Draining the job...")
+      println("Draining the job...")
       jobs
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
@@ -61,7 +58,7 @@ class DataflowClient {
         awaitCompleted(job.getId())
       }
     } else {
-      context.log("Job is already completed!")
+      println("Job is already completed!")
     }
   }
 
@@ -72,7 +69,7 @@ class DataflowClient {
   void awaitCompleted(String jobId) {
     def count = 0
     while (running(jobId) ) {
-      context.log("Wait until job is completed ($count sec)...")
+      println("Wait until job is completed ($count sec)...")
       sleep(1000)
       count++
     }

@@ -5,12 +5,9 @@
 import com.zebra.s2dl.jenkins.*
 
 def call(Closure cl) {
+  this.echo("Dataflow")
   cl.resolveStrategy = Closure.DELEGATE_FIRST
-  this.echo("test")
-  JenkinsContext ctx = JenkinsContext.of(this)
-  this.echo("that is ${ctx}")
-  this.echo("that is ${JenkinsContext.of(this)}")
-  cl.delegate = DataflowClient.of(ctx)
+  cl.delegate = DataflowClient.of()
   cl()
   return this
 }
