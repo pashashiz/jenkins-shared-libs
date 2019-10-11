@@ -28,6 +28,12 @@ class DataflowClient {
       .setApplicationName("Jenkins Dataflow plugin")
       .build()
 
+  def steps
+
+  DataflowClient(steps) {
+    this.steps = steps;
+  }
+
   Dataflow.Projects.Jobs jobs() {
     dataflow.projects().jobs()
   }
@@ -75,6 +81,9 @@ class DataflowClient {
 
   boolean completed(String jobId) {
     def job = jobs().get(projectId, jobId).execute()
+    steps.println(job)
+    steps.println(job.getId())
+    steps.println(job.getRequestedState())
     if (job != null) {
       ["JOB_STATE_STOPPED" ,
        "JOB_STATE_DONE",
