@@ -4,9 +4,15 @@ import org.junit.Test
 
 class DataflowClientTest {
 
+  class TestScript {
+    def echo(String message) {
+      println(message)
+    }
+  }
+
   @Test
   void drain() {
-    new DataflowClient(script: null)
-        .drain(name: "spg-zpc-pubsub-to-application-pipeline-.+", wait: true)
+    new DataflowClient(script: new TestScript())
+        .drain(name: " mdm-s3-soti-onprem-extractor-.+", wait: true)
   }
 }

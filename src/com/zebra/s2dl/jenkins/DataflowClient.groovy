@@ -22,7 +22,7 @@ class DataflowClient {
       .projects()
       .jobs()
 
-  Script script
+  Object script
 
   List<Job> list() {
     List<Job> all = []
