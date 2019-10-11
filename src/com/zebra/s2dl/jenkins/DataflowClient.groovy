@@ -8,11 +8,6 @@ import com.google.api.services.dataflow.model.Job
 import com.google.api.services.dataflow.model.ListJobsResponse
 import com.google.cloud.ServiceOptions
 
-import java.time.Duration
-import java.time.Instant
-import java.time.Period
-import java.util.concurrent.Executors;
-
 @Grapes([
     @Grab(group='com.google.apis', module='google-api-services-dataflow', version='v1b3-rev266-1.25.0'),
     @Grab(group='com.google.cloud', module='google-cloud-core', version='1.65.0')]
