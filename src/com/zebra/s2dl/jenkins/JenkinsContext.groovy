@@ -4,8 +4,6 @@ class JenkinsContext implements Context {
 
   def steps
 
-  JenkinsContext() {}
-
   void setSteps(steps) {
     this.steps = steps
   }
