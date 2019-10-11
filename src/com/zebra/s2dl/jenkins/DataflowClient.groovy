@@ -49,14 +49,14 @@ class DataflowClient {
           .update(projectId, job.getId(), job.setRequestedState("JOB_STATE_DRAINED"))
           .execute()
       if (wait) {
-        awaitCompleted(job.getId())
+        awaitFinished(job.getId())
       }
-    } else if (completing(job)) {
+    } else if (finishing(job)) {
       if (wait) {
-        awaitCompleted(job.getId())
+        awaitFinished(job.getId())
       }
     } else {
-      script.echo("Job is already completed!")
+      script.echo("Job was already finished!")
     }
   }
 
@@ -64,24 +64,24 @@ class DataflowClient {
     drain(args.get("name") as String, args.getOrDefault("wait", false) as Boolean)
   }
 
-  void awaitCompleted(String jobId) {
+  void awaitFinished(String jobId) {
     def count = 0
     while (running(jobId) ) {
-      script.echo("Wait until job is completed ($count sec)...")
+      script.echo("Wait until job is finished ($count sec)...")
       sleep(1000)
       count++
     }
   }
 
   boolean running(String jobId) {
-    !completed(jobId)
+    running(jobs.get(projectId, jobId).execute())
   }
 
-  boolean completed(String jobId) {
-    completed(jobs.get(projectId, jobId).execute())
+  boolean finished(String jobId) {
+    finished(jobs.get(projectId, jobId).execute())
   }
 
-  static boolean completed(Job job) {
+  static boolean finished(Job job) {
     if (job != null) {
       ["JOB_STATE_STOPPED" ,
        "JOB_STATE_DONE",
@@ -94,7 +94,7 @@ class DataflowClient {
     }
   }
 
-  static boolean completing(Job job) {
+  static boolean finishing(Job job) {
     if (job != null) {
       ["JOB_STATE_DRAINING" ,
        "JOB_STATE_CANCELLING"]
@@ -105,6 +105,6 @@ class DataflowClient {
   }
 
   static boolean running(Job job) {
-    return !completing(job) && !completed(job)
+    return !finishing(job) && !finished(job)
   }
 }
