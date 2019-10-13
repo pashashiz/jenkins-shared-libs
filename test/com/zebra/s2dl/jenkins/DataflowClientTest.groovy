@@ -22,6 +22,6 @@ class DataflowClientTest {
         .asCommandLineArgs([
             maxNumWorkers: '5',
             labels       : '{"bu-owner-manager": "jhand"}'])
-    assert args == '--maxNumWorkers=5 --labels={"bu-owner-manager":\\ "jhand"}'
+    assert args == '--maxNumWorkers=5 --labels={\\"bu-owner-manager\\":\\ \\"jhand\\"}'
   }
 }
