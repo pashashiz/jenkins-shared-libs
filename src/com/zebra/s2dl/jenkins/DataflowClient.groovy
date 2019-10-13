@@ -10,19 +10,27 @@ import com.google.cloud.ServiceOptions
 
 class DataflowClient {
 
-  private final projectId = ServiceOptions.getDefaultProjectId();
-  private final credentials = GoogleCredential.getApplicationDefault()
-      .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
-  private final jobs = new Dataflow.Builder(
-          GoogleNetHttpTransport.newTrustedTransport(),
-          JacksonFactory.getDefaultInstance(),
-          credentials)
-      .setApplicationName("Jenkins Dataflow plugin")
-      .build()
-      .projects()
-      .jobs()
-
   Object script
+
+  private static def getProjectId() {
+    ServiceOptions.getDefaultProjectId()
+  }
+
+  private static def getCredentials() {
+    GoogleCredential.getApplicationDefault()
+        .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"))
+  }
+
+  private static def getJobs() {
+    new Dataflow.Builder(
+        GoogleNetHttpTransport.newTrustedTransport(),
+        JacksonFactory.getDefaultInstance(),
+        credentials)
+        .setApplicationName("Jenkins Dataflow plugin")
+        .build()
+        .projects()
+        .jobs()
+  }
 
   List<Job> list() {
     List<Job> all = []
