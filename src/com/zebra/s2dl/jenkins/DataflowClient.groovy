@@ -96,7 +96,7 @@ class DataflowClient {
   }
 
   static String escapeSpaces(String value) {
-    value.replaceAll(" ", "\\ ")
+    value.replaceAll(" ", "\\\\ ")
   }
 
   boolean running(String jobId) {

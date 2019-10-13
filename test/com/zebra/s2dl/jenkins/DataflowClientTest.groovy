@@ -15,4 +15,13 @@ class DataflowClientTest {
     new DataflowClient(script: new TestScript())
         .drain(name: "support-gcs-archiver-.+", wait: true)
   }
+
+  @Test
+  void asCommandLineArgs() {
+    def args = new DataflowClient(script: new TestScript())
+        .asCommandLineArgs([
+            maxNumWorkers: '5',
+            labels       : '{"bu-owner-manager": "jhand"}'])
+    assert args == '--maxNumWorkers=5 --labels={"bu-owner-manager":\\ "jhand"}'
+  }
 }
