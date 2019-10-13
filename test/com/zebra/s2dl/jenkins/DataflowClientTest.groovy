@@ -17,11 +17,22 @@ class DataflowClientTest {
   }
 
   @Test
-  void asCommandLineArgs() {
+  void asCommandLineArgs_whenQuotesAndSpaces() {
     def args = new DataflowClient(script: new TestScript())
         .asCommandLineArgs([
             maxNumWorkers: '5',
             labels       : '{"bu-owner-manager": "jhand"}'])
     assert args == '--maxNumWorkers=5 --labels={\\"bu-owner-manager\\":\\ \\"jhand\\"}'
+  }
+
+  @Test
+  void asCommandLineArgs_whenMap() {
+    def args = new DataflowClient(script: new TestScript())
+        .asCommandLineArgs([
+            maxNumWorkers: '5',
+            labels       : [
+                "bu-owner-manager": "jhand"
+            ]])
+    assert args == '--maxNumWorkers=5 --labels={\\"bu-owner-manager\\":\\"jhand\\"}'
   }
 }

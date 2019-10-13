@@ -7,6 +7,7 @@ import com.google.api.services.dataflow.*
 import com.google.api.services.dataflow.model.Job
 import com.google.api.services.dataflow.model.ListJobsResponse
 import com.google.cloud.ServiceOptions
+import groovy.json.JsonOutput
 
 class DataflowClient {
 
@@ -76,7 +77,7 @@ class DataflowClient {
     def count = 0
     while (running(jobId) || finishing(jobId)) {
       if (count % 10 == 0) {
-        script.echo("Wait until job is finished ($count sec)...")
+        script.echo("Waiting until job is finished ($count sec)...")
       }
       sleep(1000)
       count++
@@ -91,12 +92,20 @@ class DataflowClient {
     script.sh("java -cp $jar $dataflow ${asCommandLineArgs(options)}")
   }
 
-  static String asCommandLineArgs(Map<String, String> args) {
-    args.collect({"--${it.key}=${escapeSpaces(it.value)}"}).join(" ")
+  static String asCommandLineArgs(Map<String, Object> args) {
+    args
+        .collect { "--${it.key}=${escapeSpaces(serialize(it.value))}" }
+        .join(" ")
   }
 
   static String escapeSpaces(String value) {
     value.replaceAll(" ", "\\\\ ").replaceAll("\"", "\\\\\"")
+  }
+
+  static String serialize(Object value) {
+    (value instanceof Map || value instanceof Collection)
+        ? JsonOutput.toJson(value)
+        : value.toString()
   }
 
   boolean running(String jobId) {
@@ -113,7 +122,7 @@ class DataflowClient {
 
   static boolean finished(Job job) {
     if (job != null) {
-      ["JOB_STATE_STOPPED" ,
+      ["JOB_STATE_STOPPED",
        "JOB_STATE_DONE",
        "JOB_STATE_FAILED",
        "JOB_STATE_CANCELLED",
@@ -126,7 +135,7 @@ class DataflowClient {
 
   static boolean finishing(Job job) {
     if (job != null) {
-      ["JOB_STATE_DRAINING" ,
+      ["JOB_STATE_DRAINING",
        "JOB_STATE_CANCELLING"]
           .contains(job.getCurrentState())
     } else {
