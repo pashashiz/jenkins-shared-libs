@@ -75,11 +75,11 @@ class DataflowClient {
     }
   }
 
-  void run(Map args) {
+  void deploy(Map args) {
     run(args.jar as String, args.dataflow as String, args.options as Map)
   }
 
-  void run(String jar, String dataflow, Map<String, String> options) {
+  void deploy(String jar, String dataflow, Map<String, String> options) {
     script.sh("java -cp $jar $dataflow ${asCommandLineArgs(options)}")
   }
 
