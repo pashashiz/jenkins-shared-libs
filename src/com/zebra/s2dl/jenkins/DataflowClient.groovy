@@ -61,7 +61,7 @@ class DataflowClient {
   }
 
   void drain(Map args) {
-    drain(args.get("name") as String, args.getOrDefault("wait", false) as Boolean)
+    drain(args.name as String, args.getOrDefault("wait", false) as Boolean)
   }
 
   void awaitFinished(String jobId) {
@@ -73,6 +73,22 @@ class DataflowClient {
       sleep(1000)
       count++
     }
+  }
+
+  void run(Map args) {
+    run(args.jar as String, args.dataflow as String, args.options as Map)
+  }
+
+  void run(String jar, String dataflow, Map<String, String> options) {
+    script.sh("java -cp $jar $dataflow ${asCommandLineArgs(options)}")
+  }
+
+  static String asCommandLineArgs(Map<String, String> args) {
+    args.collect({"--${it.key}=${escapeSpaces(it.value)}"}).join(" ")
+  }
+
+  static String escapeSpaces(String value) {
+    value.replaceAll(" ", "\\ ")
   }
 
   boolean running(String jobId) {
