@@ -76,7 +76,7 @@ class DataflowClient {
   }
 
   void deploy(Map args) {
-    run(args.jar as String, args.dataflow as String, args.options as Map)
+    deploy(args.jar as String, args.dataflow as String, args.options as Map)
   }
 
   void deploy(String jar, String dataflow, Map<String, String> options) {
